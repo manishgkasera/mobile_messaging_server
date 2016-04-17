@@ -1,5 +1,6 @@
 require 'bundler'
 Bundler.require
+require 'socket'
 
 require_relative 'setup_db'
 require_relative 'niki/client_message'
