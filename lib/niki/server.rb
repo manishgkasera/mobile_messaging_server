@@ -13,6 +13,7 @@ module Niki
     end
 
     def start
+      register_os_signals
       listen_for_client_commands
       # creats a thread which gets a event when new message arives
       # then sends it to the client
@@ -31,10 +32,21 @@ module Niki
     end
 
     private
+      def register_os_signals
+        Signal.trap("TERM") {
+          say("Shutting down!!")
+          exit
+        }
+        Signal.trap("INT") {
+          say("Shutting down!!")
+          exit
+        }
+      end
+
       def event_listner_for_incomming_messages
         Thread.start do
           server = TCPServer.new hostname, event_port
-          say "Starting event listner on #{hostname}:#{event_port}"
+          say "Starting event listner on #{hostname}:#{event_port} PID:#{Process.pid}"
           loop do
             Thread.start(server.accept) do |client|
               ch_id = client.gets.to_i
