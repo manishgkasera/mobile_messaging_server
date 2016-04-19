@@ -20,6 +20,7 @@ module Niki
       new_message = self.new(client_handler_id: client_handler_id, body: body)
       if duplicate?(new_message)
         new_message.ignored!
+        return false
       else
         new_message.pending!
       end
