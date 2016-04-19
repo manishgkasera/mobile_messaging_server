@@ -110,9 +110,15 @@ module Niki
         end
       end
 
+      # check client sockets for any input
+      # if so return those socket,ch_id pairs
+      # else wait and check every 'timeout' seconds
+      # so if new clients connect we can monitor those too
+      # 'timeout' value should be tweeked based on the requirements
       def client_with_commands
+        timeout = 2
         loop do
-          if io_ready_clients = IO.select(client_sockets.keys, nil, nil, 5).try(:[], 0)
+          if io_ready_clients = IO.select(client_sockets.keys, nil, nil, timeout).try(:[], 0)
             return io_ready_clients.map{|socket| [socket, client_sockets[socket]]}
           end
           # if none has issued any commands
