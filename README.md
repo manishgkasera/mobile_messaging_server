@@ -31,6 +31,22 @@ Use telnet to connect, you have to use hostname as the first argument to telnet 
 Once the initial handshake is complete, server will start sending messages as 'MESSAGE: hello'.
 
 To disconnect give the command as 'DISCONNECT'
+#### Enqueue messages
+Example to enqueue messages from ruby irb
+  - start the irb using ```bundle exec irb -r ./lib/niki/base.rb```
+  
+  ```ruby
+  message = "hello client"
+  client_id = Niki::ClientHandler.first.id
+  Niki::ClientMessage.enqueue(client_id, message)
+  ```
+  - enqueue will automatically sends a event to all the servers and then the server connected to client will deliver the message
 
-
+### Design overview
+  - Main server starts two additional threads
+    - 1. this listens to client commands like 'DISCONNECT' other commads can be added as required.
+    - 2. this thread is an internal thread which gets invoked when a new message arrives and take the responsibility to deliver it to the client.
+  - Main thread takes the responsibility to add new clients and on initial connect check and deliver pending messages (this happens in a seperate client specific thread)
+  - when client send a command thread one will handle that
+  - when new message arrives thread 2 will deliver it the client
 
